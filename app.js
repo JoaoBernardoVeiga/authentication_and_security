@@ -2,6 +2,7 @@ const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const express = require("express");
 const mongoose = require("mongoose");
+const encrypt = require("mongoose-encryption");
 
 const app = express();
 
@@ -13,10 +14,14 @@ app.use(bodyParser.urlencoded(
 
 mongoose.connect('mongodb://127.0.0.1:27017/userDB');
 
-const userSchema = {
+const userSchema = new mongoose.Schema ({
     email: String,
     password: String,
-}; 
+}); 
+
+const secret = "Thisisourlittlesecret.";
+
+userSchema.plugin(encrypt, {secret: secret, encryptedFields: ['password'] });
 
 const User = new mongoose.model("User", userSchema);
 
@@ -64,6 +69,10 @@ app.post("/register", (req, res) => {
 });
 
 
+// temporary route
+app.get("/logout", (req, res) => {
+    res.redirect("/");
+})
 
 
 
